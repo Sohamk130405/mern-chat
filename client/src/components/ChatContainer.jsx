@@ -7,7 +7,7 @@ import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime } from "../lib/utils";
 
-const ChatContainer = () => {
+const ChatContainer = ({ toggleSidebar }) => {
   const {
     messages,
     getMessages,
@@ -18,7 +18,6 @@ const ChatContainer = () => {
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
-
   useEffect(() => {
     getMessages(selectedUser._id);
 
@@ -41,7 +40,7 @@ const ChatContainer = () => {
   if (isMessagesLoading) {
     return (
       <div className="flex-1 flex flex-col overflow-auto">
-        <ChatHeader />
+        <ChatHeader toggleSidebar={toggleSidebar} />
         <MessageSkeleton />
         <MessageInput />
       </div>
@@ -50,7 +49,7 @@ const ChatContainer = () => {
 
   return (
     <div className="flex-1 flex flex-col overflow-auto">
-      <ChatHeader />
+      <ChatHeader toggleSidebar={toggleSidebar} />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
@@ -78,7 +77,8 @@ const ChatContainer = () => {
                 {formatMessageTime(message.createdAt)}
               </time>
             </div>
-            <div className="chat-bubble flex flex-col">
+
+            <div className="chat-bubble flex flex-col bg-primary">
               {message.image && (
                 <img
                   src={message.image}
@@ -86,7 +86,9 @@ const ChatContainer = () => {
                   className="sm:max-w-[200px] rounded-md mb-2"
                 />
               )}
-              {message.text && <p>{message.text}</p>}
+              {message.text && (
+                <p className="text-primary-content">{message.text}</p>
+              )}
             </div>
           </div>
         ))}

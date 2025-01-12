@@ -2,9 +2,9 @@ import { X } from "lucide-react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 
-const ChatHeader = () => {
+const ChatHeader = ({ toggleSidebar }) => {
   const { selectedUser, setSelectedUser } = useChatStore();
-  const {onlineUsers} = useAuthStore();
+  const { onlineUsers } = useAuthStore();
 
   return (
     <div className="p-2.5 border-b border-base-300">
@@ -30,7 +30,12 @@ const ChatHeader = () => {
         </div>
 
         {/* Close button */}
-        <button onClick={() => setSelectedUser(null)}>
+        <button
+          onClick={() => {
+            setSelectedUser(null);
+            toggleSidebar();
+          }}
+        >
           <X />
         </button>
       </div>
