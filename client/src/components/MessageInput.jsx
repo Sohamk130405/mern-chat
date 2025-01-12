@@ -7,7 +7,7 @@ const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
-  const { sendMessage } = useChatStore();
+  const { sendMessage, isSendingMessage } = useChatStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -15,7 +15,6 @@ const MessageInput = () => {
       toast.error("Please select an image file");
       return;
     }
-
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result);
@@ -30,8 +29,8 @@ const MessageInput = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
+    if (isSendingMessage) return;
     if (!text.trim() && !imagePreview) return;
-
     try {
       await sendMessage({
         text: text.trim(),
@@ -70,7 +69,7 @@ const MessageInput = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-        <div className="flex-1 flex gap-2">
+        <div className="flex-1 flex gap-2 items-center">
           <input
             type="text"
             className="w-full input input-bordered rounded-lg input-sm sm:input-md"
@@ -88,7 +87,7 @@ const MessageInput = () => {
 
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle
+            className={`flex btn btn-circle
                      ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
             onClick={() => fileInputRef.current?.click()}
           >

@@ -9,6 +9,8 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
+  isSendingMessage: false,
+  setIsSendingMessage: (isSendingMessage) => set({ isSendingMessage }),
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),
   getUsers: async () => {
@@ -37,8 +39,8 @@ export const useChatStore = create((set, get) => ({
       set({ isMessagesLoading: false });
     }
   },
-
   sendMessage: async (data) => {
+    set({ isSendingMessage: true });
     const { selectedUser, messages } = get();
     try {
       const res = await api.post(`/messages/send/${selectedUser._id}`, data);
@@ -47,7 +49,18 @@ export const useChatStore = create((set, get) => ({
       console.log("Error in send message:", error.message);
       toast.error(error.response.data.message || "Internal Server Error");
     } finally {
+      set({ isSendingMessage: false });
       set({ isMessagesLoading: false });
+    }
+  },
+  deleteMessage: async (messageId) => {
+    try {
+      const { messages } = get();
+      await api.delete(`/message/${messageId}`);
+      set({ messages: messages.filter((m) => m._id !== messageId) });
+    } catch (error) {
+      console.log("Error in delete message:", error.message);
+      toast.error(error.response.data.message || "Internal Server Error");
     }
   },
   subscribeToMessages: () => {
